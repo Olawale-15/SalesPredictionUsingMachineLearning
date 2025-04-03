@@ -11,7 +11,10 @@ namespace SalesPrediction.Entities
         //public bool IsHoliday { get; set; }  
         [LoadColumn(2)]
         public string Author { get; set; } = default!;
-        [LoadColumn(3), ColumnName("Label")]
+        [LoadColumn(3), ColumnName("Sales")]
         public float Sales { get; set; }
+
+        //[LoadColumn(4), ColumnName("Price")]
+        //public float Price { get; set; }
     }
 }

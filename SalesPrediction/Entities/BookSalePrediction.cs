@@ -6,5 +6,9 @@ namespace SalesPrediction.Entities
     {
         [ColumnName("Score")]
         public float PredictedSales { get; set; }
+
+        //public float PredictedPrice { get; set; }
     }
+
+    
 }
