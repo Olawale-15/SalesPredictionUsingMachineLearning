@@ -103,12 +103,12 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 SaleModelTrainer.TrainModels();
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -119,6 +119,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-app.Urls.Add($"http://*:{port}");
+//app.Urls.Add($"http://*:{port}");
 
 app.Run();
