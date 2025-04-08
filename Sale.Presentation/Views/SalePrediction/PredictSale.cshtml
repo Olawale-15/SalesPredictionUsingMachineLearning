@@ -1,0 +1,828 @@
+﻿@model SalesPrediction.Entities.BookSaleData
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Prediction Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #5e72e4;
+            --primary-light: #825ee4;
+            --secondary: #11cdef;
+            --success: #2dce89;
+            --warning: #fb6340;
+            --dark: #32325d;
+            --light: #f8f9fe;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --glass-effect: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark);
+            min-height: 100vh;
+        }
+
+        /* Dashboard Layout */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--dark);
+            color: white;
+            padding: 2rem 1rem;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            padding-left: 0.5rem;
+        }
+
+            .logo i {
+                color: var(--secondary);
+            }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+            .nav-link:hover, .nav-link.active {
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .nav-link i {
+                width: 20px;
+                text-align: center;
+            }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title h1 {
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+
+        .page-title p {
+            color: #6c757d;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+            .card:hover {
+                transform: translateY(-5px);
+            }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-change {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .positive {
+            color: var(--success);
+        }
+
+        .negative {
+            color: var(--warning);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .icon-blue {
+            background: rgba(94, 114, 228, 0.1);
+            color: var(--primary);
+        }
+
+        .icon-green {
+            background: rgba(45, 206, 137, 0.1);
+            color: var(--success);
+        }
+
+        .icon-orange {
+            background: rgba(251, 99, 64, 0.1);
+            color: var(--warning);
+        }
+
+        .icon-cyan {
+            background: rgba(17, 205, 239, 0.1);
+            color: var(--secondary);
+        }
+
+        /* Charts Section */
+        .charts {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+            .chart-btn:hover {
+                background: rgba(0, 0, 0, 0.1);
+            }
+
+            .chart-btn.active {
+                background: var(--primary);
+                color: white;
+            }
+
+        /* Prediction Form */
+        .prediction-form {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+            .form-row .form-group {
+                flex: 1;
+            }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+            .form-control:focus {
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.2);
+                outline: none;
+            }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+            .btn:hover {
+                background: var(--primary-light);
+                transform: translateY(-2px);
+            }
+
+            .btn i {
+                font-size: 0.9rem;
+            }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1.1rem;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        /* Recent Sales Table */
+        .recent-sales {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .table th, .table td {
+                padding: 1rem;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+            }
+
+            .table th {
+                font-weight: 600;
+                color: #6c757d;
+            }
+
+        .status {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-completed {
+            background: rgba(45, 206, 137, 0.1);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .status-canceled {
+            background: rgba(251, 99, 64, 0.1);
+            color: var(--warning);
+        }
+
+        /* Results Section */
+        .result {
+            background: rgba(46, 206, 137, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border-left: 4px solid var(--success);
+            animation: fadeIn 0.5s ease-out;
+            display: none;
+        }
+
+            .result.show {
+                display: block;
+            }
+
+            .result h3 {
+                color: var(--success);
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+        .prediction-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0.5rem 0;
+        }
+
+        .text-danger {
+            color: var(--warning);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+       
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>SalesAI</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-bullseye"></i>
+                        <span>Forecasts</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>Customers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-box-open"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <div class="page-title">
+                    <h1>Sales Prediction Dashboard</h1>
+                    <p>AI-powered sales forecasts and analytics</p>
+                </div>
+                <div class="user-menu">
+                    <div class="user-profile">
+                        <div class="user-avatar">JD</div>
+                        <span>John Doe</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Predicted Sales</div>
+                            <div class="card-value">$124,580</div>
+                            <div class="card-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>12.5% from last month</span>
+                            </div>
+                        </div>
+                        <div class="card-icon icon-blue">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Conversion Rate</div>
+                            <div class="card-value">3.42%</div>
+                            <div class="card-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>1.2% from last month</span>
+                            </div>
+                        </div>
+                        <div class="card-icon icon-green">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Avg. Order Value</div>
+                            <div class="card-value">$89.42</div>
+                            <div class="card-change negative">
+                                <i class="fas fa-arrow-down"></i>
+                                <span>2.3% from last month</span>
+                            </div>
+                        </div>
+                        <div class="card-icon icon-orange">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Predicted Orders</div>
+                            <div class="card-value">1,392</div>
+                            <div class="card-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>8.7% from last month</span>
+                            </div>
+                        </div>
+                        <div class="card-icon icon-cyan">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Sales Forecast</h3>
+                        <div class="chart-actions">
+                            <button class="chart-btn active">Monthly</button>
+                            <button class="chart-btn">Quarterly</button>
+                            <button class="chart-btn">Yearly</button>
+                        </div>
+                    </div>
+                    <canvas id="salesChart" height="300"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Top Products</h3>
+                        <div class="chart-actions">
+                            <button class="chart-btn active">Revenue</button>
+                            <button class="chart-btn">Units</button>
+                        </div>
+                    </div>
+                    <canvas id="productsChart" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- Prediction Form and Recent Sales -->
+            <div class="charts">
+                <div class="prediction-form">
+                    <h3 class="form-title">Book Sales Prediction</h3>
+                    <form asp-action="PredictSale" method="POST">
+                        @Html.AntiForgeryToken()
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label asp-for="BookTitle" class="form-label">Book Title</label>
+                                <input type="text"
+                                       id="bookTitle"
+                                       class="form-control"
+                                       placeholder="e.g. Data Management"
+                                       asp-for="BookTitle" />
+                                <span asp-validation-for="BookTitle" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Author" class="form-label">Author's Name</label>
+                                <input type="text"
+                                       id="author"
+                                       class="form-control"
+                                       placeholder="e.g. Ade"
+                                       asp-for="Author" />
+                                <span asp-validation-for="Author" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label asp-for="Discount" class="form-label">Discount (%)</label>
+                                <input type="number"
+                                       id="discount"
+                                       class="form-control"
+                                       placeholder="e.g. 10"
+                                       min="0"
+                                       max="100"
+                                       asp-for="Discount" />
+                                <span asp-validation-for="Discount" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Sales" class="form-label">Previous Sales</label>
+                                <input type="number"
+                                       id="sales"
+                                       class="form-control"
+                                       placeholder="e.g. 200"
+                                       min="0"
+                                       asp-for="Sales" />
+                                <span asp-validation-for="Sales" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <input type="submit" value="Predict Sale" asp-action="PredictSale" asp-controller="SalePrediction">
+                    </form>
+
+                    <!-- Prediction Results Section -->
+                    @if (ViewBag.PredictionResult != null)
+                    {
+                        <div class="result show">
+                            <h3><i class="fas fa-chart-line"></i> Prediction Result</h3>
+                            <div class="prediction-value">@ViewBag.PredictionResult predicted sales</div>
+                            <p>Based on the input parameters:</p>
+                            <ul>
+                                <li>Book: @ViewBag.BookTitle</li>
+                                <li>Author: @ViewBag.Author</li>
+                                <li>Discount: @ViewBag.Discount%</li>
+                                <li>Previous Sales: @ViewBag.PreviousSales</li>
+                            </ul>
+                        </div>
+                    }
+                </div>
+
+                <div class="recent-sales">
+                    <h3 class="chart-title">Recent Sales</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#ORD-7841</td>
+                                <td>Sarah Johnson</td>
+                                <td>$245.99</td>
+                                <td><span class="status status-completed">Completed</span></td>
+                                <td>May 15, 2023</td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-7840</td>
+                                <td>Michael Chen</td>
+                                <td>$189.50</td>
+                                <td><span class="status status-completed">Completed</span></td>
+                                <td>May 15, 2023</td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-7839</td>
+                                <td>Emily Wilson</td>
+                                <td>$320.00</td>
+                                <td><span class="status status-pending">Pending</span></td>
+                                <td>May 14, 2023</td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-7838</td>
+                                <td>Robert Garcia</td>
+                                <td>$145.75</td>
+                                <td><span class="status status-canceled">Canceled</span></td>
+                                <td>May 14, 2023</td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-7837</td>
+                                <td>Lisa Thompson</td>
+                                <td>$275.30</td>
+                                <td><span class="status status-completed">Completed</span></td>
+                                <td>May 13, 2023</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sales Chart
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'Actual Sales',
+                        data: [85000, 79000, 92000, 105000, 115000, 112000, 125000, 118000, 132000, 145000, 158000, 172000],
+                        borderColor: '#5e72e4',
+                        backgroundColor: 'rgba(94, 114, 228, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Predicted Sales',
+                        data: [null, null, null, null, null, null, null, null, 132000, 142000, 155000, 168000],
+                        borderColor: '#11cdef',
+                        backgroundColor: 'rgba(17, 205, 239, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Products Chart
+        const productsCtx = document.getElementById('productsChart').getContext('2d');
+        const productsChart = new Chart(productsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Smartphones', 'Laptops', 'Headphones', 'Smart Watches', 'Tablets'],
+                datasets: [{
+                    data: [35, 25, 20, 15, 5],
+                    backgroundColor: [
+                        '#5e72e4',
+                        '#11cdef',
+                        '#2dce89',
+                        '#fb6340',
+                        '#f5365c'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+
+        // Chart period buttons functionality
+        document.querySelectorAll('.chart-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons in the same group
+                this.parentElement.querySelectorAll('.chart-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                // Add active class to clicked button
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

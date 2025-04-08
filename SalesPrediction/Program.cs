@@ -56,7 +56,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1",
         new()
         {
-            Title = "Hostel Management  API Service",
+            Title = "Sales Prediction Using Machine Learning",
             Version = "v1",
             Contact = new()
             {

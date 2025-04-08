@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35806.99 d17.13
+VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SalesPrediction", "SalesPrediction\SalesPrediction.csproj", "{C75AD2FC-A715-452D-BFB5-17B4C5205BB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sale.Presentation", "Sale.Presentation\Sale.Presentation.csproj", "{8BEE78B2-6D48-46F7-BE77-70F620EDB17F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{C75AD2FC-A715-452D-BFB5-17B4C5205BB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C75AD2FC-A715-452D-BFB5-17B4C5205BB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C75AD2FC-A715-452D-BFB5-17B4C5205BB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BEE78B2-6D48-46F7-BE77-70F620EDB17F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BEE78B2-6D48-46F7-BE77-70F620EDB17F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BEE78B2-6D48-46F7-BE77-70F620EDB17F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BEE78B2-6D48-46F7-BE77-70F620EDB17F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
